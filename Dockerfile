@@ -5,16 +5,16 @@ ARG TARGETARCH
 
 ENV K6_TEST_NAME=http-load-test
 
-# Install k6
 RUN apk add --no-cache \
     curl \
     tar \
-    ca-certificates \
-    && curl -L https://github.com/grafana/k6/releases/download/v${K6_VERSION}/k6-v${K6_VERSION}-linux-${TARGETARCH}.tar.gz -o /tmp/k6.tar.gz \
-    && tar -xzf /tmp/k6.tar.gz -C /tmp \
-    && mv /tmp/k6-v${K6_VERSION}-linux-${TARGETARCH}/k6 /usr/local/bin/ \
-    && chmod +x /usr/local/bin/k6 \
-    && rm -rf /tmp/*
+    ca-certificates
+
+RUN curl -L https://github.com/grafana/k6/releases/download/v${K6_VERSION}/k6-v${K6_VERSION}-linux-${TARGETARCH}.tar.gz -o /tmp/k6.tar.gz
+
+RUN tar -xzf /tmp/k6.tar.gz -C /tmp
+RUN mv /tmp/k6-v${K6_VERSION}-linux-${TARGETARCH}/k6 /usr/local/bin/
+RUN chmod +x /usr/local/bin/k6
 
 COPY tests/ /tests/
 COPY entrypoint.sh /entrypoint.sh
