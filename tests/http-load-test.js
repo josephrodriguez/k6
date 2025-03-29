@@ -8,11 +8,12 @@ const httpRampUpDurationSeconds = parseInt(__ENV.K6_HTTP_RAMP_UP_DURATION_SECOND
 const httpRampDownDurationSeconds = parseInt(__ENV.K6_HTTP_RAMP_DOWN_DURATION_SECONDS || 30, 10);
 
 export let options = {
+    executor: 'ramping-vus',
     stages: [
         { duration: `${httpRampUpDurationSeconds}s`, target: httpRampUpVirtualUsers },
         { duration: `${httpLoadDurationSeconds}s`, target: httpRampUpVirtualUsers },
         { duration: `${httpRampDownDurationSeconds}s`, target: 0 },
-    ]
+    ],
 };
 
 export default function () {
