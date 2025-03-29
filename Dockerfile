@@ -14,8 +14,7 @@ RUN apk add --no-cache \
     && tar -xzf /tmp/k6.tar.gz -C /tmp \
     && mv /tmp/k6-v${K6_VERSION}-linux-${TARGETARCH}/k6 /usr/local/bin/ \
     && chmod +x /usr/local/bin/k6 \
-    && rm -rf /tmp/* \
-    && apk del curl tar ca-certificates
+    && rm -rf /tmp/*
 
 COPY tests/ /tests/
 COPY entrypoint.sh /entrypoint.sh
