@@ -6,7 +6,7 @@ ARG TARGETARCH
 ENV K6_TEST_NAME=http-load-test
 
 # Install k6
-RUN apt update && apt install -y \
+RUN apt update && apt install -y --no-install-recommends \
     curl \
     tar \
     ca-certificates \
