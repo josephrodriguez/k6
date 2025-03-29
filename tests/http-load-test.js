@@ -6,6 +6,7 @@ const httpRampUpVirtualUsers = parseInt(__ENV.K6_HTTP_RAMP_UP_VUS || 100, 10);
 const httpLoadDurationSeconds = parseInt(__ENV.K6_HTTP_LOAD_DURATION_SECONDS || 60, 10);
 const httpRampUpDurationSeconds = parseInt(__ENV.K6_HTTP_RAMP_UP_DURATION_SECONDS || 30, 10);
 const httpRampDownDurationSeconds = parseInt(__ENV.K6_HTTP_RAMP_DOWN_DURATION_SECONDS || 30, 10);
+const enableLogs = __ENV.K6_ENABLE_LOGS === 'true';
 
 export let options = {
     executor: 'ramping-vus',
@@ -22,7 +23,9 @@ export default function () {
 
     const response = http.get(httpBaseUrl);
 
-    console.log(`[${new Date().toISOString()}] VU ${vuId} - Iteration ${iteration}: Response Code ${response.status}`);
+    if (enableLogs) {
+        console.log(`[${new Date().toISOString()}] VU ${vuId} - Iteration ${iteration}: Response Code ${response.status}`);
+    }
 
     check(response, {
         'is status 200': (r) => r.status === 200,
