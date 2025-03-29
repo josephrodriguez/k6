@@ -20,6 +20,8 @@ RUN apk add --no-cache \
 COPY tests/ /tests/
 COPY entrypoint.sh /entrypoint.sh
 
+WORKDIR /tests
+
 RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT [ "/entrypoint.sh" ]
