@@ -10,4 +10,7 @@ RUN apt update && apt install -y \
     curl \
     tar \
     ca-certificates \
-    && curl -L https://github.com/grafana/k6/releases/download/v${K6_VERSION}/k6-v${K6_VERSION}-linux-${TARGETARCH}.tar.gz -o /tmp/k6.tar.gz
+    && curl -L https://github.com/grafana/k6/releases/download/v${K6_VERSION}/k6-v${K6_VERSION}-linux-${TARGETARCH}.tar.gz -o /tmp/k6.tar.gz \
+    && tar -xzf /tmp/k6.tar.gz -C /tmp \
+    && mv /tmp/k6-v${K6_VERSION}-linux-${TARGETARCH}/k6 /usr/local/bin/ \
+    && chmod +x /usr/local/bin/k6
