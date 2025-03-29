@@ -17,7 +17,14 @@ for var in $(env | grep '^K6_' | cut -d= -f1); do
 done
 echo ""
 
-echo "==========================================================="
-echo "Running performance test locally with K6"
-echo "==========================================================="
-k6 run $ENV_VARS "${K6_TEST_NAME}.js"
+if [ -n "$K6_CLOUD_TOKEN" ]; then
+    echo "==========================================================="
+    echo "Running performance test locally with K6 Cloud mode"
+    echo "==========================================================="
+    k6 cloud run --local-execution $ENV_VARS "${K6_TEST_NAME}.js"
+else
+    echo "==========================================================="
+    echo "Running performance test locally with K6"
+    echo "==========================================================="
+    k6 run $ENV_VARS "${K6_TEST_NAME}.js"
+fi
