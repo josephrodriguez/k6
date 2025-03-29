@@ -16,3 +16,10 @@ RUN apk add --no-cache \
     && chmod +x /usr/local/bin/k6 \
     && rm -rf /tmp/* \
     && apk del curl tar ca-certificates
+
+COPY tests/ /tests/
+COPY entrypoint.sh /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT [ "/entrypoint.sh" ]
