@@ -1,17 +1,26 @@
 import grpc from 'k6/net/grpc';
 import { check, sleep } from 'k6';
 
-const HOST = __ENV.GRPC_HOST || 'localhost';
-const PORT = __ENV.GRPC_PORT || '50051';
-const TARGET = `${HOST}:${PORT}`;
-const METHOD = __ENV.GRPC_METHOD;
+const host = __ENV.GRPC_HOST || 'localhost';
+const port = __ENV.GRPC_PORT || '50051';
+const target = `${host}:${port}`;
+const method = __ENV.GRPC_METHOD;
+const protoFile = __ENV.GRPC_PROTO_FILE;
 
-const PAYLOAD = JSON.parse(__ENV.GRPC_PAYLOAD || '{}');
+const payload = JSON.parse(__ENV.GRPC_PAYLOAD || '{}');
 
 const rampUpDuration = __ENV.RAMP_UP || '10s';
 const loadDuration = __ENV.LOAD || '30s';
 const rampDownDuration = __ENV.RAMP_DOWN || '10s';
 const vus = parseInt(__ENV.VUS || '10');
+
+if (!method) {
+    fail('Environment variable GRPC_METHOD is required.');
+}
+
+if (!protoFile) {
+    fail('Environment variable GRPC_PROTO_FILE is required.');
+}
 
 export let options = {
     scenarios: {
@@ -28,12 +37,12 @@ export let options = {
 };
 
 const client = new grpc.Client();
-client.load(['.'], 'grpc_pressure.proto');
+client.load(['.'], protoFile);
 
 export default () => {
-    client.connect(TARGET, { plaintext: true });
+    client.connect(target, { plaintext: true });
 
-    const response = client.invoke(METHOD, PAYLOAD);
+    const response = client.invoke(method, payload);
 
     check(response, {
         'status is OK': (r) => r && r.status === grpc.StatusOK,
