@@ -21,7 +21,7 @@ jobs:
             platform: linux/arm64
           - runner: ubuntu-latest
             platform: linux/amd64
-    uses: josephrodriguez/github-workflow/.github/workflows/docker-build-release-by-digest.yaml@v1.7
+    uses: josephrodriguez/github-workflow/.github/workflows/docker-build-release-by-digest.yaml@2becbdd633fd690e0878139a83b0f64cbc59ed1f
     with:
       github_runner: ${{ matrix.build.runner }}
       docker_image_name: ghcr.io/${{ github.repository }}
@@ -36,7 +36,7 @@ jobs:
       DOCKER_REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   push:
-    uses: josephrodriguez/github-workflow/.github/workflows/docker-push-release-by-digest.yaml@v1.7
+    uses: josephrodriguez/github-workflow/.github/workflows/docker-push-release-by-digest.yaml@2becbdd633fd690e0878139a83b0f64cbc59ed1f
     permissions:
       packages: write
       contents: read
@@ -46,60 +46,16 @@ jobs:
       docker_registry_url: ghcr.io
       docker_image_name: ghcr.io/${{ github.repository }}
       docker_image_tags: |
-        type=raw,value={{date 'YYYYMMDDhhmm'}}-{{sha}}
-        type=semver,pattern={{version}}
-        type=semver,pattern={{major}}.{{minor}}
+        type=raw,value=1.5.0-{{date 'YYYYMMDDhhmm'}}-{{sha}}
         type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
-      docker_digest_pattern: digests-spring-boot*
+      docker_digest_pattern: digests-k6*
     secrets:
       DOCKER_REGISTRY_USERNAME: ${{ github.actor }}
-      DOCKER_REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-
-  # build:
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: read
-  #     packages: write    
-  #   steps:
-  #     - name: Checkout the code
-  #       uses: actions/checkout@v6
-        
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v3
-          
-  #     - name: Log in to DockerHub
-  #       uses: docker/login-action@v3
-  #       with:
-  #         registry: ghcr.io
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}   
-            
-  #     - name: Docker metadata
-  #       id: metadata
-  #       uses: docker/metadata-action@v5
-  #       with:
-  #         images: ghcr.io/${{ github.repository }}
-  #         tags: |
-  #           type=raw,value={{date 'YYYYMMDDHHmm'}}-{{sha}}
-  #           type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
-            
-  #     - name: Build and push docker image
-  #       uses: docker/build-push-action@v6
-  #       with:
-  #         build-args: |
-  #           K6_VERSION=1.5.0
-  #         cache-from: type=gha
-  #         cache-to: type=gha,mode=max
-  #         platforms: linux/amd64, linux/arm64
-  #         provenance: mode=max
-  #         sbom: true
-  #         push: true
-  #         tags: ${{ steps.metadata.outputs.tags }}
-  #         labels: ${{ steps.metadata.outputs.labels }}
+      DOCKER_REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             
   dependabot:
     needs: [ push ]
     permissions: write-all
-    uses: josephrodriguez/github-workflow/.github/workflows/dependabot-merge-pull-request.yaml@main
+    uses: josephrodriguez/github-workflow/.github/workflows/dependabot-merge-pull-request.yaml@2becbdd633fd690e0878139a83b0f64cbc59ed1f
     secrets:
       AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}                 
