@@ -1,0 +1,61 @@
+name: docker-release
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - '*'
+    
+jobs:
+  build:
+    permissions:
+      contents: read
+      packages: write  
+    strategy:
+      fail-fast: true
+      matrix:
+        build:
+          - runner: ubuntu-24.04-arm
+            platform: linux/arm64
+          - runner: ubuntu-latest
+            platform: linux/amd64
+    uses: josephrodriguez/github-workflow/.github/workflows/docker-build-release-by-digest.yaml@2becbdd633fd690e0878139a83b0f64cbc59ed1f
+    with:
+      github_runner: ${{ matrix.build.runner }}
+      docker_image_name: ghcr.io/${{ github.repository }}
+      docker_build_args: |
+        K6_VERSION=1.5.0
+      docker_platform: ${{ matrix.build.platform }}
+      docker_push: true
+      docker_digest_name: digests-k6
+      docker_registry_url: ghcr.io
+    secrets:
+      DOCKER_REGISTRY_USERNAME: ${{ github.actor }}
+      DOCKER_REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  push:
+    uses: josephrodriguez/github-workflow/.github/workflows/docker-push-release-by-digest.yaml@2becbdd633fd690e0878139a83b0f64cbc59ed1f
+    permissions:
+      packages: write
+      contents: read
+    needs:
+      - build
+    with:
+      docker_registry_url: ghcr.io
+      docker_image_name: ghcr.io/${{ github.repository }}
+      docker_image_tags: |
+        type=raw,value=1.5.0-{{date 'YYYYMMDDhhmm'}}-{{sha}}
+        type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+      docker_digest_pattern: digests-k6*
+    secrets:
+      DOCKER_REGISTRY_USERNAME: ${{ github.actor }}
+      DOCKER_REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            
+  dependabot:
+    needs: [ push ]
+    permissions: write-all
+    uses: josephrodriguez/github-workflow/.github/workflows/dependabot-merge-pull-request.yaml@2becbdd633fd690e0878139a83b0f64cbc59ed1f
+    secrets:
+      AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}                 
