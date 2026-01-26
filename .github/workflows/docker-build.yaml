@@ -21,7 +21,7 @@ jobs:
             platform: linux/arm64
           - runner: ubuntu-latest
             platform: linux/amd64
-    uses: josephrodriguez/github-workflow/.github/workflows/docker-build-release-by-digest.yaml@74b71ba331b1775d009d3441f96c88d78d1f4254
+    uses: josephrodriguez/github-workflow/.github/workflows/docker-build-release-by-digest.yaml@e48e4f0f0d2181d06f3a6562e3f3272e6982c54d
     with:
       github_runner: ${{ matrix.build.runner }}
       docker_image_name: ghcr.io/${{ github.repository }}
