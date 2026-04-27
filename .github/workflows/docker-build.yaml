@@ -36,7 +36,7 @@ jobs:
       DOCKER_REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   push:
-    uses: josephrodriguez/github-workflow/.github/workflows/docker-push-release-by-digest.yaml@984b9d7dc2e239078eb3332db19e1291b166fe7a
+    uses: josephrodriguez/github-workflow/.github/workflows/docker-push-release-by-digest.yaml@8298095114702012a8ab1cd27436531be9a8bd29
     permissions:
       packages: write
       contents: read
